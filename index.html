@@ -62,35 +62,6 @@ body{
     display:block;
 }
 
-.tapOverlay{
-    position:absolute;
-    inset:0;
-    z-index:20;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    cursor:pointer;
-    background:transparent;
-}
-
-.tapText{
-    color:white;
-    font-family:Arial,sans-serif;
-    font-size:22px;
-    font-weight:600;
-    letter-spacing:2px;
-    line-height:normal;
-
-    padding:15px 28px;
-    border:1px solid rgba(255,255,255,.8);
-    border-radius:40px;
-
-    background:rgba(0,0,0,.28);
-    backdrop-filter:blur(4px);
-}
-
 
 /* =========================
    PAGE 3
@@ -380,6 +351,7 @@ body{
     box-shadow:
         0 5px 15px rgba(0,0,0,.2);
 }
+
 </style>
 </head>
 
@@ -389,6 +361,7 @@ body{
 
 <!-- =========================
      PAGE 1
+     DIRECT OPEN
 ========================= -->
 
 <section class="page page1">
@@ -397,19 +370,10 @@ body{
         id="page1Video"
         src="Page.mp4"
         playsinline
-        preload="auto"
-        muted>
+        autoplay
+        muted
+        preload="auto">
     </video>
-
-    <div
-        class="tapOverlay"
-        id="tapOverlay">
-
-        <div class="tapText">
-            Tap to Open
-        </div>
-
-    </div>
 
 </section>
 
@@ -425,7 +389,7 @@ body{
         src="page2.mp4"
         playsinline
         muted
-        preload="metadata">
+        preload="auto">
     </video>
 
 </section>
@@ -483,7 +447,7 @@ body{
         src="page4.mp4"
         playsinline
         muted
-        preload="metadata">
+        preload="auto">
     </video>
 
 </section>
@@ -500,7 +464,7 @@ body{
         src="page5.mp4"
         playsinline
         muted
-        preload="metadata">
+        preload="auto">
     </video>
 
 </section>
@@ -517,7 +481,7 @@ body{
         src="page6.mp4"
         playsinline
         muted
-        preload="metadata">
+        preload="auto">
     </video>
 
 </section>
@@ -548,7 +512,7 @@ body{
 
             <a
                 class="locationButton"
-                href="https://share.google/lQPPTbf7PM"
+                href="https://share.google/ucUvqZWpjeH02cQ7Z"
                 target="_blank"
                 rel="noopener">
 
@@ -572,37 +536,38 @@ body{
 <script>
 
 /* =========================================
-   PAGE 1 + MUSIC
+   PAGE 1 — DIRECTLY START
 ========================================= */
-
-let backgroundSong = null;
-
-const tapOverlay =
-    document.getElementById("tapOverlay");
 
 const page1Video =
     document.getElementById("page1Video");
 
 
-tapOverlay.addEventListener("click", function(){
+/*
+   Page.mp4 automatically starts
+   as soon as the website opens.
+*/
 
-    /* Remove Tap to Open immediately */
-    tapOverlay.style.display = "none";
+page1Video.muted = true;
 
-
-    /* Start Page 1 video */
-    page1Video.muted = false;
-
-    page1Video.play().catch(function(){
-
-        page1Video.muted = true;
-
-        page1Video.play();
-
-    });
+page1Video.play().catch(function(){});
 
 
-    /* Start background music */
+
+/* =========================================
+   BACKGROUND MUSIC
+========================================= */
+
+let backgroundSong = null;
+
+
+function startBackgroundSong(){
+
+    if(backgroundSong){
+        return;
+    }
+
+
     backgroundSong =
         new Audio("Song.mp3");
 
@@ -612,7 +577,30 @@ tapOverlay.addEventListener("click", function(){
 
     backgroundSong.play().catch(function(){});
 
-});
+}
+
+
+/*
+   First touch/click starts the song.
+   Music then keeps looping.
+*/
+
+document.addEventListener(
+    "click",
+    startBackgroundSong,
+    {
+        once:true
+    }
+);
+
+document.addEventListener(
+    "touchstart",
+    startBackgroundSong,
+    {
+        once:true,
+        passive:true
+    }
+);
 
 
 
@@ -736,7 +724,9 @@ let lastY = 0;
 
 
 
-/* Resize canvas exactly to Page 3 */
+/* =========================================
+   RESIZE CANVAS
+========================================= */
 
 function resizeCanvas(){
 
@@ -796,9 +786,6 @@ function resizeCanvas(){
 }
 
 
-
-/* Draw Scratch.jpg */
-
 function drawScratchImage(w,h){
 
     ctx.globalCompositeOperation =
@@ -812,13 +799,17 @@ function drawScratchImage(w,h){
     );
 
 
-    ctx.drawImage(
-        scratchImage,
-        0,
-        0,
-        w,
-        h
-    );
+    if(scratchImage.complete){
+
+        ctx.drawImage(
+            scratchImage,
+            0,
+            0,
+            w,
+            h
+        );
+
+    }
 
 }
 
@@ -838,7 +829,9 @@ window.addEventListener(
 
 
 
-/* Get touch / mouse position */
+/* =========================================
+   GET SCRATCH POSITION
+========================================= */
 
 function getPosition(e){
 
@@ -861,7 +854,8 @@ function getPosition(e){
         clientY =
             e.touches[0].clientY;
 
-    }else{
+    }
+    else{
 
         clientX =
             e.clientX;
@@ -888,7 +882,9 @@ function getPosition(e){
 
 
 
-/* Scratch action */
+/* =========================================
+   SCRATCH ACTION
+========================================= */
 
 function scratch(e){
 
@@ -901,12 +897,12 @@ function scratch(e){
         getPosition(e);
 
 
-    /* First scratch */
     if(!started){
 
         started = true;
 
-        /* Hide Scratch Here */
+        /* Scratch Here disappears */
+
         scratchText.style.opacity =
             "0";
 
@@ -956,17 +952,33 @@ function scratch(e){
 
 
 
-/* Mouse */
+/* =========================================
+   MOUSE
+========================================= */
 
 canvas.addEventListener(
     "mousedown",
-    scratch
+    function(e){
+
+        scratch(e);
+
+    }
 );
+
 
 canvas.addEventListener(
     "mousemove",
-    scratch
+    function(e){
+
+        if(isScratching){
+
+            scratch(e);
+
+        }
+
+    }
 );
+
 
 canvas.addEventListener(
     "mouseup",
@@ -976,6 +988,7 @@ canvas.addEventListener(
 
     }
 );
+
 
 canvas.addEventListener(
     "mouseleave",
@@ -988,19 +1001,39 @@ canvas.addEventListener(
 
 
 
-/* Touch */
+/* =========================================
+   TOUCH
+========================================= */
 
 canvas.addEventListener(
     "touchstart",
-    scratch,
-    {passive:false}
+    function(e){
+
+        scratch(e);
+
+    },
+    {
+        passive:false
+    }
 );
+
 
 canvas.addEventListener(
     "touchmove",
-    scratch,
-    {passive:false}
+    function(e){
+
+        if(isScratching){
+
+            scratch(e);
+
+        }
+
+    },
+    {
+        passive:false
+    }
 );
+
 
 canvas.addEventListener(
     "touchend",
@@ -1009,7 +1042,9 @@ canvas.addEventListener(
         isScratching = false;
 
     },
-    {passive:false}
+    {
+        passive:false
+    }
 );
 
 
@@ -1116,7 +1151,6 @@ function checkScratchProgress(){
         (transparent / total) * 100;
 
 
-    /* Scratch complete */
     if(percent >= 45){
 
         completed = true;
@@ -1132,7 +1166,6 @@ function checkScratchProgress(){
             "none";
 
 
-        /* Immediate confetti */
         launchConfetti();
 
     }
@@ -1245,6 +1278,68 @@ function launchConfetti(){
     );
 
 }
+
+
+
+/* =========================================
+   PAGE 2 / 4 / 5 / 6
+   AUTO PLAY WHEN VISIBLE
+========================================= */
+
+const pageVideos =
+    document.querySelectorAll(
+        ".page video:not(#page1Video)"
+    );
+
+
+const videoObserver =
+    new IntersectionObserver(
+
+        function(entries){
+
+            entries.forEach(
+                function(entry){
+
+                    const video =
+                        entry.target;
+
+
+                    if(
+                        entry.isIntersecting
+                    ){
+
+                        video.play().catch(
+                            function(){}
+                        );
+
+                    }
+                    else{
+
+                        video.pause();
+
+                    }
+
+                }
+            );
+
+        },
+
+        {
+            threshold:0.15
+        }
+
+    );
+
+
+pageVideos.forEach(
+    function(video){
+
+        videoObserver.observe(
+            video
+        );
+
+    }
+);
 
 </script>
 
