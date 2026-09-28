@@ -1,1 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Poorva Sharma & Himanshu Gupta - Wedding Invitation</title>
 
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html,body{
+  width:100%;
+  background:#000;
+  overflow-x:hidden;
+}
+
+.page{
+  width:100%;
+  height:100vh;
+  position:relative;
+  overflow:hidden;
+}
+
+.page video,
+.page img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.open-btn,
+.location-btn{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  padding:14px 28px;
+  border:1px solid white;
+  border-radius:30px;
+  background:rgba(0,0,0,.35);
+  color:white;
+  font-size:16px;
+  letter-spacing:1px;
+  z-index:10;
+}
+
+.open-btn{
+  bottom:7%;
+}
+
+.location-btn{
+  bottom:8%;
+  background:rgba(255,255,255,.95);
+  color:#222;
+  border:none;
+}
+
+#scratchCanvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  z-index:5;
+  touch-action:none;
+}
+
+#countdown{
+  position:absolute;
+  left:50%;
+  bottom:8%;
+  transform:translateX(-50%);
+  width:90%;
+  text-align:center;
+  color:#222;
+  font-size:18px;
+  z-index:2;
+}
+
+.confetti{
+  position:fixed;
+  top:-20px;
+  width:8px;
+  height:14px;
+  z-index:100;
+  pointer-events:none;
+  animation:fall 3.5s linear forwards;
+}
+
+@keyframes fall{
+  to{
+    transform:translateY(110vh) rotate(720deg);
+    opacity:0;
+  }
+}
+
+audio{
+  display:none;
+}
+</style>
+</head>
+
+<body>
+
+<audio id="music" loop>
+  <source src="Song.mp3" type="audio/mpeg">
+</audio>
+
+<!-- PAGE 1 -->
+<section class="page">
+  <video id="video1" muted playsinline preload="auto">
+    <source src="page1.mp4" type="video/mp4">
+  </video>
+
+  <button class="open-btn" onclick="openInvitation()">
+    TOUCH TO OPEN
+  </button>
+</section>
+
+<!-- PAGE 2 -->
+<section class="page">
+  <video autoplay muted loop playsinline preload="auto">
+    <source src="page2.mp4" type="video/mp4">
+  </video>
+</section>
+
+<!-- PAGE 3 - SCRATCH -->
+<section class="page" id="scratchPage">
+
+  <img src="page3.jpg" alt="Wedding Invitation">
+
+  <div id="countdown"></div>
+
+  <canvas id="scratchCanvas"></canvas>
+
+</section>
+
+<!-- PAGE 4 -->
+<section class="page">
+  <video autoplay muted loop playsinline preload="auto">
+    <source src="page4.mp4" type="video/mp4">
+  </video>
+</section>
+
+<!-- PAGE 5 -->
+<section class="page">
+  <video autoplay muted loop playsinline preload="auto">
+    <source src="page5.mp4" type="video/mp4">
+  </video>
+</section>
+
+<!-- PAGE 6 -->
+<section class="page">
+  <video autoplay muted loop playsinline preload="auto">
+    <source src="page6.mp4" type="video/mp4">
+  </video>
+</section>
+
+<!-- LOCATION -->
+<section class="page">
+  <button class="location-btn" onclick="openLocation()">
+    TOUCH FOR LOCATION
+  </button>
+</section>
+
+<script>
+
+function openInvitation(){
+
+  document.getElementById("music")
+    .play()
+    .catch(()=>{});
+
+  document.getElementById("video1")
+    .play()
+    .catch(()=>{});
+
+}
+
+
+/* LOCATION */
+
+function openLocation(){
+
+  window.open(
+    "https://share.google/lQPPTbf7PM5RXSDiX",
+    "_blank"
+  );
+
+}
+
+
+/* SCRATCH */
+
+const canvas =
+  document.getElementById("scratchCanvas");
+
+const ctx =
+  canvas.getContext("2d");
+
+let scratchCount = 0;
+let celebrationDone = false;
+
+function setupScratch(){
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const img = new Image();
+
+  img.onload = function(){
+
+    ctx.globalCompositeOperation =
+      "source-over";
+
+    ctx.drawImage(
+      img,
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+  };
+
+  img.src = "Scratch.jpg";
+
+}
+
+setupScratch();
+
+window.addEventListener(
+  "resize",
+  setupScratch
+);
+
+
+function scratch(x,y){
+
+  ctx.globalCompositeOperation =
+    "destination-out";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    x,
+    y,
+    42,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fill();
+
+  scratchCount++;
+
+  if(
+    scratchCount >= 30 &&
+    !celebrationDone
+  ){
+
+    celebrationDone = true;
+    createConfetti();
+
+  }
+
+}
+
+
+/* TOUCH */
+
+canvas.addEventListener(
+  "touchstart",
+  function(e){
+
+    e.preventDefault();
+
+    const t=e.touches[0];
+
+    scratch(
+      t.clientX,
+      t.clientY
+    );
+
+  },
+  {passive:false}
+);
+
+
+canvas.addEventListener(
+  "touchmove",
+  function(e){
+
+    e.preventDefault();
+
+    const t=e.touches[0];
+
+    scratch(
+      t.clientX,
+      t.clientY
+    );
+
+  },
+  {passive:false}
+);
+
+
+/* MOUSE */
+
+canvas.addEventListener(
+  "mousedown",
+  function(e){
+
+    scratch(
+      e.clientX,
+      e.clientY
+    );
+
+  }
+);
+
+canvas.addEventListener(
+  "mousemove",
+  function(e){
+
+    if(e.buttons === 1){
+
+      scratch(
+        e.clientX,
+        e.clientY
+      );
+
+    }
+
+  }
+);
+
+
+/* CONFETTI */
+
+function createConfetti(){
+
+  for(let i=0;i<120;i++){
+
+    const piece =
+      document.createElement("div");
+
+    piece.className =
+      "confetti";
+
+    piece.style.left =
+      Math.random()*100+"vw";
+
+    piece.style.animationDelay =
+      Math.random()*1.5+"s";
+
+    document.body.appendChild(piece);
+
+    setTimeout(
+      ()=>piece.remove(),
+      4500
+    );
+
+  }
+
+}
+
+
+/* COUNTDOWN */
+
+const weddingDate =
+  new Date("2026-12-02T00:00:00").getTime();
+
+
+function updateCountdown(){
+
+  const distance =
+    weddingDate -
+    new Date().getTime();
+
+  if(distance<=0){
+
+    document.getElementById(
+      "countdown"
+    ).innerHTML =
+      "The Celebration Has Begun ❤️";
+
+    return;
+
+  }
+
+  const days =
+    Math.floor(
+      distance/(1000*60*60*24)
+    );
+
+  const hours =
+    Math.floor(
+      (distance%(1000*60*60*24))/
+      (1000*60*60)
+    );
+
+  const minutes =
+    Math.floor(
+      (distance%(1000*60*60))/
+      (1000*60)
+    );
+
+  const seconds =
+    Math.floor(
+      (distance%(1000*60))/1000
+    );
+
+  document.getElementById(
+    "countdown"
+  ).innerHTML =
+    days+" Days "+
+    hours+" Hours "+
+    minutes+" Minutes "+
+    seconds+" Seconds";
+
+}
+
+updateCountdown();
+
+setInterval(
+  updateCountdown,
+  1000
+);
+
+</script>
+
+</body>
+</html>
