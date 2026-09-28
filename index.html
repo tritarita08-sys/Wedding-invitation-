@@ -62,6 +62,35 @@ body{
     display:block;
 }
 
+.tapOverlay{
+    position:absolute;
+    inset:0;
+    z-index:20;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+    background:transparent;
+}
+
+.tapText{
+    color:white;
+    font-family:Arial,sans-serif;
+    font-size:22px;
+    font-weight:600;
+    letter-spacing:2px;
+    line-height:normal;
+
+    padding:15px 28px;
+    border:1px solid rgba(255,255,255,.8);
+    border-radius:40px;
+
+    background:rgba(0,0,0,.28);
+    backdrop-filter:blur(4px);
+}
+
 
 /* =========================
    PAGE 3
@@ -351,7 +380,6 @@ body{
     box-shadow:
         0 5px 15px rgba(0,0,0,.2);
 }
-
 </style>
 </head>
 
@@ -361,7 +389,6 @@ body{
 
 <!-- =========================
      PAGE 1
-     DIRECT OPEN
 ========================= -->
 
 <section class="page page1">
@@ -370,10 +397,19 @@ body{
         id="page1Video"
         src="Page.mp4"
         playsinline
-        autoplay
         muted
         preload="auto">
     </video>
+
+    <div
+        class="tapOverlay"
+        id="tapOverlay">
+
+        <div class="tapText">
+            Tap to Open
+        </div>
+
+    </div>
 
 </section>
 
@@ -536,69 +572,178 @@ body{
 <script>
 
 /* =========================================
-   PAGE 1 — DIRECTLY START
+   PAGE 1 + MUSIC
 ========================================= */
+
+let backgroundSong = null;
+
+const tapOverlay =
+    document.getElementById("tapOverlay");
 
 const page1Video =
     document.getElementById("page1Video");
 
 
-/*
-   Page.mp4 automatically starts
-   as soon as the website opens.
-*/
+/* PAGE 1 TAP */
 
-page1Video.muted = true;
+tapOverlay.addEventListener("click", function(){
 
-page1Video.play().catch(function(){});
+    /* Remove Tap to Open */
+    tapOverlay.style.display = "none";
+
+
+    /* Start Page 1 video */
+    page1Video.muted = false;
+
+    page1Video.play().catch(function(){
+
+        page1Video.muted = true;
+
+        page1Video.play().catch(function(){});
+
+    });
+
+
+    /* Start Song.mp3 */
+    if(!backgroundSong){
+
+        backgroundSong =
+            new Audio("Song.mp3");
+
+        backgroundSong.loop = true;
+
+        backgroundSong.volume = 1;
+
+        backgroundSong.play().catch(function(){
+
+            /* If browser blocks it,
+               try again on next touch */
+
+        });
+
+    }
+
+});
+
+
+/* Extra mobile touch support */
+
+tapOverlay.addEventListener("touchend", function(){
+
+    /* Remove Tap to Open */
+    tapOverlay.style.display = "none";
+
+
+    /* Start Page 1 video */
+    page1Video.muted = false;
+
+    page1Video.play().catch(function(){
+
+        page1Video.muted = true;
+
+        page1Video.play().catch(function(){});
+
+    });
+
+
+    /* Start Song.mp3 */
+    if(!backgroundSong){
+
+        backgroundSong =
+            new Audio("Song.mp3");
+
+        backgroundSong.loop = true;
+
+        backgroundSong.volume = 1;
+
+        backgroundSong.play().catch(function(){});
+
+    }
+
+}, {passive:true});
 
 
 
 /* =========================================
-   BACKGROUND MUSIC
+   KEEP SONG PLAYING AFTER FIRST INTERACTION
 ========================================= */
 
-let backgroundSong = null;
+document.addEventListener("click", function(){
 
+    if(
+        backgroundSong &&
+        backgroundSong.paused
+    ){
 
-function startBackgroundSong(){
+        backgroundSong.play().catch(function(){});
 
-    if(backgroundSong){
-        return;
     }
 
-
-    backgroundSong =
-        new Audio("Song.mp3");
-
-    backgroundSong.loop = true;
-
-    backgroundSong.volume = 1;
-
-    backgroundSong.play().catch(function(){});
-
-}
+});
 
 
-/*
-   First touch/click starts the song.
-   Music then keeps looping.
-*/
+document.addEventListener("touchstart", function(){
 
-document.addEventListener(
-    "click",
-    startBackgroundSong,
-    {
-        once:true
+    if(
+        backgroundSong &&
+        backgroundSong.paused
+    ){
+
+        backgroundSong.play().catch(function(){});
+
     }
-);
 
-document.addEventListener(
-    "touchstart",
-    startBackgroundSong,
-    {
-        once:true,
-        passive:true
+}, {passive:true});
+
+
+
+/* =========================================
+   PAGE 4 / 5 / 6 AUTO PLAY
+========================================= */
+
+const pageVideos =
+    document.querySelectorAll(
+        ".page video:not(#page1Video)"
+    );
+
+const videoObserver =
+    new IntersectionObserver(
+        function(entries){
+
+            entries.forEach(
+                function(entry){
+
+                    const video =
+                        entry.target;
+
+                    if(entry.isIntersecting){
+
+                        video.play().catch(
+                            function(){}
+                        );
+
+                    }
+                    else{
+
+                        video.pause();
+
+                    }
+
+                }
+            );
+
+        },
+        {
+            threshold:0.15
+        }
+    );
+
+
+pageVideos.forEach(
+    function(video){
+
+        videoObserver.observe(video);
+
     }
 );
 
@@ -636,6 +781,7 @@ function updateCountdown(){
             "The Big Day Is Here ❤️";
 
         return;
+
     }
 
 
@@ -724,9 +870,7 @@ let lastY = 0;
 
 
 
-/* =========================================
-   RESIZE CANVAS
-========================================= */
+/* Resize canvas exactly to Page 3 */
 
 function resizeCanvas(){
 
@@ -786,6 +930,9 @@ function resizeCanvas(){
 }
 
 
+
+/* Draw Scratch.jpg */
+
 function drawScratchImage(w,h){
 
     ctx.globalCompositeOperation =
@@ -799,17 +946,13 @@ function drawScratchImage(w,h){
     );
 
 
-    if(scratchImage.complete){
-
-        ctx.drawImage(
-            scratchImage,
-            0,
-            0,
-            w,
-            h
-        );
-
-    }
+    ctx.drawImage(
+        scratchImage,
+        0,
+        0,
+        w,
+        h
+    );
 
 }
 
@@ -829,9 +972,7 @@ window.addEventListener(
 
 
 
-/* =========================================
-   GET SCRATCH POSITION
-========================================= */
+/* Get touch / mouse position */
 
 function getPosition(e){
 
@@ -854,8 +995,7 @@ function getPosition(e){
         clientY =
             e.touches[0].clientY;
 
-    }
-    else{
+    }else{
 
         clientX =
             e.clientX;
@@ -882,9 +1022,7 @@ function getPosition(e){
 
 
 
-/* =========================================
-   SCRATCH ACTION
-========================================= */
+/* Scratch action */
 
 function scratch(e){
 
@@ -897,11 +1035,13 @@ function scratch(e){
         getPosition(e);
 
 
+    /* First scratch */
+
     if(!started){
 
         started = true;
 
-        /* Scratch Here disappears */
+        /* Hide Scratch Here */
 
         scratchText.style.opacity =
             "0";
@@ -952,33 +1092,17 @@ function scratch(e){
 
 
 
-/* =========================================
-   MOUSE
-========================================= */
+/* Mouse */
 
 canvas.addEventListener(
     "mousedown",
-    function(e){
-
-        scratch(e);
-
-    }
+    scratch
 );
-
 
 canvas.addEventListener(
     "mousemove",
-    function(e){
-
-        if(isScratching){
-
-            scratch(e);
-
-        }
-
-    }
+    scratch
 );
-
 
 canvas.addEventListener(
     "mouseup",
@@ -988,7 +1112,6 @@ canvas.addEventListener(
 
     }
 );
-
 
 canvas.addEventListener(
     "mouseleave",
@@ -1001,39 +1124,19 @@ canvas.addEventListener(
 
 
 
-/* =========================================
-   TOUCH
-========================================= */
+/* Touch */
 
 canvas.addEventListener(
     "touchstart",
-    function(e){
-
-        scratch(e);
-
-    },
-    {
-        passive:false
-    }
+    scratch,
+    {passive:false}
 );
-
 
 canvas.addEventListener(
     "touchmove",
-    function(e){
-
-        if(isScratching){
-
-            scratch(e);
-
-        }
-
-    },
-    {
-        passive:false
-    }
+    scratch,
+    {passive:false}
 );
-
 
 canvas.addEventListener(
     "touchend",
@@ -1042,9 +1145,7 @@ canvas.addEventListener(
         isScratching = false;
 
     },
-    {
-        passive:false
-    }
+    {passive:false}
 );
 
 
@@ -1151,6 +1252,8 @@ function checkScratchProgress(){
         (transparent / total) * 100;
 
 
+    /* Scratch complete */
+
     if(percent >= 45){
 
         completed = true;
@@ -1165,6 +1268,8 @@ function checkScratchProgress(){
         scratchText.style.display =
             "none";
 
+
+        /* Immediate confetti */
 
         launchConfetti();
 
@@ -1278,68 +1383,6 @@ function launchConfetti(){
     );
 
 }
-
-
-
-/* =========================================
-   PAGE 2 / 4 / 5 / 6
-   AUTO PLAY WHEN VISIBLE
-========================================= */
-
-const pageVideos =
-    document.querySelectorAll(
-        ".page video:not(#page1Video)"
-    );
-
-
-const videoObserver =
-    new IntersectionObserver(
-
-        function(entries){
-
-            entries.forEach(
-                function(entry){
-
-                    const video =
-                        entry.target;
-
-
-                    if(
-                        entry.isIntersecting
-                    ){
-
-                        video.play().catch(
-                            function(){}
-                        );
-
-                    }
-                    else{
-
-                        video.pause();
-
-                    }
-
-                }
-            );
-
-        },
-
-        {
-            threshold:0.15
-        }
-
-    );
-
-
-pageVideos.forEach(
-    function(video){
-
-        videoObserver.observe(
-            video
-        );
-
-    }
-);
 
 </script>
 
