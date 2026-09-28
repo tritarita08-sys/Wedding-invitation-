@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Wedding Invitation</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,body{
+    margin:0;
+    padding:0;
+    width:100%;
+    background:#000;
+    overflow-x:hidden;
+}
+
+body{
+    line-height:0;
+}
+
+/* ALL PAGES — NO GAP */
+.page{
+    width:100%;
+    margin:0 !important;
+    padding:0 !important;
+    display:block;
+    position:relative;
+    overflow:hidden;
+    background:#000;
+    line-height:0;
+}
+
+.page video,
+.page img{
+    display:block;
+    width:100%;
+    height:auto;
+    margin:0;
+    padding:0;
+    border:0;
+}
+
+
+/* =========================
+   PAGE 1
+========================= */
+
+.page1{
+    position:relative;
+}
+
+#page1Video{
+    width:100%;
+    height:auto;
+    display:block;
+}
+
+.tapOverlay{
+    position:absolute;
+    inset:0;
+    z-index:20;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    cursor:pointer;
+    background:transparent;
+}
+
+.tapText{
+    color:white;
+    font-family:Arial,sans-serif;
+    font-size:22px;
+    font-weight:600;
+    letter-spacing:2px;
+    line-height:normal;
+
+    padding:15px 28px;
+    border:1px solid rgba(255,255,255,.8);
+    border-radius:40px;
+
+    background:rgba(0,0,0,.28);
+    backdrop-filter:blur(4px);
+}
+
+
+/* =========================
+   PAGE 3
+   EXACT 25 : 20 RATIO
+========================= */
+
+.page3{
+    width:100%;
+    display:flex;
+    justify-content:center;
+    background:#000;
+}
+
+.page3Box{
+    position:relative;
+
+    width:min(100vw,125vh);
+    aspect-ratio:25 / 20;
+
+    margin:0 !important;
+    padding:0 !important;
+
+    overflow:hidden;
+    line-height:normal;
+}
+
+.page3Base{
+    position:absolute;
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+    z-index:1;
+}
+
+
+/* LIVE COUNTDOWN */
+
+.countdown{
+    position:absolute;
+
+    left:50%;
+    bottom:8%;
+
+    transform:translateX(-50%);
+
+    width:90%;
+
+    text-align:center;
+
+    color:white;
+    font-family:Arial,sans-serif;
+    font-size:clamp(16px,4vw,32px);
+    font-weight:700;
+
+    text-shadow:
+        0 2px 5px #000,
+        0 0 12px rgba(255,255,255,.8);
+
+    pointer-events:none;
+
+    z-index:4;
+}
+
+#countdownText{
+    display:inline-block;
+
+    padding:8px 18px;
+
+    border-radius:14px;
+
+    background:rgba(0,0,0,.35);
+    backdrop-filter:blur(3px);
+
+    line-height:normal;
+}
+
+
+/* SCRATCH CANVAS */
+
+#scratchCanvas{
+    position:absolute;
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    z-index:10;
+
+    cursor:crosshair;
+    touch-action:none;
+}
+
+
+/* SCRATCH HERE */
+
+.scratchText{
+    position:absolute;
+
+    left:50%;
+    top:50%;
+
+    transform:translate(-50%,-50%);
+
+    z-index:15;
+
+    color:white;
+    font-family:Arial,sans-serif;
+
+    font-size:clamp(18px,5vw,34px);
+    font-weight:700;
+    letter-spacing:2px;
+
+    text-align:center;
+    line-height:normal;
+
+    padding:12px 24px;
+
+    border-radius:30px;
+
+    background:rgba(0,0,0,.32);
+
+    text-shadow:0 2px 5px #000;
+
+    pointer-events:none;
+
+    transition:opacity .15s ease;
+}
+
+
+/* =========================
+   CONFETTI
+========================= */
+
+#confettiContainer{
+    position:fixed;
+    inset:0;
+
+    z-index:9999;
+
+    pointer-events:none;
+
+    overflow:hidden;
+}
+
+.confetti{
+    position:absolute;
+
+    top:-30px;
+
+    width:8px;
+    height:14px;
+
+    opacity:0;
+
+    animation:confettiFall linear forwards;
+}
+
+@keyframes confettiFall{
+
+    0%{
+        transform:
+            translate3d(0,-30px,0)
+            rotate(0deg);
+
+        opacity:1;
+    }
+
+    15%{
+        opacity:1;
+    }
+
+    100%{
+        transform:
+            translate3d(var(--drift),110vh,0)
+            rotate(var(--rotate));
+
+        opacity:0;
+    }
+}
+
+
+/* =========================
+   LOCATION
+   SAME 25 : 20 SIZE AS PAGE 3
+========================= */
+
+.locationPage{
+    width:100%;
+
+    display:flex;
+    justify-content:center;
+
+    background:#000;
+}
+
+.locationCard{
+
+    width:min(100vw,125vh);
+
+    aspect-ratio:25 / 20;
+
+    margin:0 !important;
+    padding:0;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8f3e8,
+            #ffffff,
+            #eee4d1
+        );
+}
+
+.locationInner{
+
+    width:82%;
+
+    padding:8%;
+
+    text-align:center;
+    line-height:normal;
+
+    border-radius:25px;
+
+    background:rgba(255,255,255,.82);
+
+    box-shadow:
+        0 10px 40px rgba(0,0,0,.18);
+}
+
+.locationIcon{
+    font-size:45px;
+    margin-bottom:15px;
+}
+
+.locationTitle{
+
+    font-family:Georgia,serif;
+
+    font-size:clamp(24px,6vw,42px);
+
+    font-weight:bold;
+
+    color:#6c4b25;
+
+    margin-bottom:10px;
+}
+
+.locationSub{
+
+    font-family:Arial,sans-serif;
+
+    font-size:clamp(14px,3.5vw,20px);
+
+    color:#555;
+
+    margin-bottom:25px;
+}
+
+.locationButton{
+
+    display:inline-block;
+
+    text-decoration:none;
+
+    color:white;
+
+    background:#8b6a3e;
+
+    padding:13px 25px;
+
+    border-radius:30px;
+
+    font-family:Arial,sans-serif;
+
+    font-size:16px;
+
+    font-weight:bold;
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,.2);
+}
+</style>
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     PAGE 1
+========================= -->
+
+<section class="page page1">
+
+    <video
+        id="page1Video"
+        src="Page.mp4"
+        playsinline
+        preload="auto"
+        muted>
+    </video>
+
+    <div
+        class="tapOverlay"
+        id="tapOverlay">
+
+        <div class="tapText">
+            Tap to Open
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     PAGE 2
+========================= -->
+
+<section class="page">
+
+    <video
+        src="page2.mp4"
+        playsinline
+        muted
+        preload="metadata">
+    </video>
+
+</section>
+
+
+
+<!-- =========================
+     PAGE 3
+========================= -->
+
+<section class="page page3">
+
+    <div class="page3Box">
+
+        <!-- ORIGINAL PAGE 3 -->
+        <img
+            src="page3.jpg"
+            class="page3Base"
+            alt="Save the Date">
+
+        <!-- LIVE COUNTDOWN -->
+        <div class="countdown">
+
+            <span id="countdownText">
+                Loading...
+            </span>
+
+        </div>
+
+        <!-- SCRATCH LAYER -->
+        <canvas id="scratchCanvas"></canvas>
+
+        <!-- SCRATCH TEXT -->
+        <div
+            class="scratchText"
+            id="scratchText">
+
+            Scratch Here
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- =========================
+     PAGE 4
+========================= -->
+
+<section class="page">
+
+    <video
+        src="page4.mp4"
+        playsinline
+        muted
+        preload="metadata">
+    </video>
+
+</section>
+
+
+
+<!-- =========================
+     PAGE 5
+========================= -->
+
+<section class="page">
+
+    <video
+        src="page5.mp4"
+        playsinline
+        muted
+        preload="metadata">
+    </video>
+
+</section>
+
+
+
+<!-- =========================
+     PAGE 6
+========================= -->
+
+<section class="page">
+
+    <video
+        src="page6.mp4"
+        playsinline
+        muted
+        preload="metadata">
+    </video>
+
+</section>
+
+
+
+<!-- =========================
+     LOCATION
+========================= -->
+
+<section class="page locationPage">
+
+    <div class="locationCard">
+
+        <div class="locationInner">
+
+            <div class="locationIcon">
+                📍
+            </div>
+
+            <div class="locationTitle">
+                Wedding Location
+            </div>
+
+            <div class="locationSub">
+                Tap below to view the location
+            </div>
+
+            <a
+                class="locationButton"
+                href="https://share.google/lQPPTbf7PM"
+                target="_blank"
+                rel="noopener">
+
+                View Location
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- CONFETTI -->
+<div id="confettiContainer"></div>
+
+
+
+<script>
+
+/* =========================================
+   PAGE 1 + MUSIC
+========================================= */
+
+let backgroundSong = null;
+
+const tapOverlay =
+    document.getElementById("tapOverlay");
+
+const page1Video =
+    document.getElementById("page1Video");
+
+
+tapOverlay.addEventListener("click", function(){
+
+    /* Remove Tap to Open immediately */
+    tapOverlay.style.display = "none";
+
+
+    /* Start Page 1 video */
+    page1Video.muted = false;
+
+    page1Video.play().catch(function(){
+
+        page1Video.muted = true;
+
+        page1Video.play();
+
+    });
+
+
+    /* Start background music */
+    backgroundSong =
+        new Audio("Song.mp3");
+
+    backgroundSong.loop = true;
+
+    backgroundSong.volume = 1;
+
+    backgroundSong.play().catch(function(){});
+
+});
+
+
+
+/* =========================================
+   PAGE 3 COUNTDOWN
+   24 NOVEMBER 2026
+========================================= */
+
+const targetDate =
+    new Date(
+        "2026-11-24T00:00:00+05:30"
+    ).getTime();
+
+
+const countdownText =
+    document.getElementById(
+        "countdownText"
+    );
+
+
+function updateCountdown(){
+
+    const now =
+        new Date().getTime();
+
+    const distance =
+        targetDate - now;
+
+
+    if(distance <= 0){
+
+        countdownText.innerHTML =
+            "The Big Day Is Here ❤️";
+
+        return;
+    }
+
+
+    const days =
+        Math.floor(
+            distance /
+            (1000 * 60 * 60 * 24)
+        );
+
+
+    const hours =
+        Math.floor(
+            (distance %
+            (1000 * 60 * 60 * 24))
+            /
+            (1000 * 60 * 60)
+        );
+
+
+    const minutes =
+        Math.floor(
+            (distance %
+            (1000 * 60 * 60))
+            /
+            (1000 * 60)
+        );
+
+
+    const seconds =
+        Math.floor(
+            (distance %
+            (1000 * 60))
+            /
+            1000
+        );
+
+
+    countdownText.innerHTML =
+        `${days} Days • ${hours} Hours • ${minutes} Min • ${seconds} Sec`;
+
+}
+
+
+updateCountdown();
+
+setInterval(
+    updateCountdown,
+    1000
+);
+
+
+
+/* =========================================
+   SCRATCH
+========================================= */
+
+const canvas =
+    document.getElementById(
+        "scratchCanvas"
+    );
+
+const ctx =
+    canvas.getContext("2d");
+
+const scratchText =
+    document.getElementById(
+        "scratchText"
+    );
+
+const scratchImage =
+    new Image();
+
+scratchImage.src =
+    "Scratch.jpg";
+
+
+let isScratching = false;
+
+let started = false;
+
+let completed = false;
+
+let lastX = 0;
+
+let lastY = 0;
+
+
+
+/* Resize canvas exactly to Page 3 */
+
+function resizeCanvas(){
+
+    const box =
+        document.querySelector(
+            ".page3Box"
+        );
+
+    const rect =
+        box.getBoundingClientRect();
+
+
+    const dpr =
+        Math.min(
+            window.devicePixelRatio || 1,
+            2
+        );
+
+
+    canvas.width =
+        Math.round(
+            rect.width * dpr
+        );
+
+    canvas.height =
+        Math.round(
+            rect.height * dpr
+        );
+
+
+    canvas.style.width =
+        rect.width + "px";
+
+    canvas.style.height =
+        rect.height + "px";
+
+
+    ctx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+    );
+
+
+    if(!completed){
+
+        drawScratchImage(
+            rect.width,
+            rect.height
+        );
+
+    }
+
+}
+
+
+
+/* Draw Scratch.jpg */
+
+function drawScratchImage(w,h){
+
+    ctx.globalCompositeOperation =
+        "source-over";
+
+    ctx.clearRect(
+        0,
+        0,
+        w,
+        h
+    );
+
+
+    ctx.drawImage(
+        scratchImage,
+        0,
+        0,
+        w,
+        h
+    );
+
+}
+
+
+scratchImage.onload =
+    function(){
+
+        resizeCanvas();
+
+    };
+
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+
+
+/* Get touch / mouse position */
+
+function getPosition(e){
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+
+    let clientX;
+    let clientY;
+
+
+    if(
+        e.touches &&
+        e.touches.length
+    ){
+
+        clientX =
+            e.touches[0].clientX;
+
+        clientY =
+            e.touches[0].clientY;
+
+    }else{
+
+        clientX =
+            e.clientX;
+
+        clientY =
+            e.clientY;
+
+    }
+
+
+    return {
+
+        x:
+            clientX -
+            rect.left,
+
+        y:
+            clientY -
+            rect.top
+
+    };
+
+}
+
+
+
+/* Scratch action */
+
+function scratch(e){
+
+    if(completed) return;
+
+    e.preventDefault();
+
+
+    const pos =
+        getPosition(e);
+
+
+    /* First scratch */
+    if(!started){
+
+        started = true;
+
+        /* Hide Scratch Here */
+        scratchText.style.opacity =
+            "0";
+
+    }
+
+
+    ctx.globalCompositeOperation =
+        "destination-out";
+
+
+    ctx.lineWidth = 48;
+
+    ctx.lineCap = "round";
+
+    ctx.lineJoin = "round";
+
+
+    if(isScratching){
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            lastX,
+            lastY
+        );
+
+        ctx.lineTo(
+            pos.x,
+            pos.y
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    lastX = pos.x;
+
+    lastY = pos.y;
+
+    isScratching = true;
+
+
+    checkScratchProgress();
+
+}
+
+
+
+/* Mouse */
+
+canvas.addEventListener(
+    "mousedown",
+    scratch
+);
+
+canvas.addEventListener(
+    "mousemove",
+    scratch
+);
+
+canvas.addEventListener(
+    "mouseup",
+    function(){
+
+        isScratching = false;
+
+    }
+);
+
+canvas.addEventListener(
+    "mouseleave",
+    function(){
+
+        isScratching = false;
+
+    }
+);
+
+
+
+/* Touch */
+
+canvas.addEventListener(
+    "touchstart",
+    scratch,
+    {passive:false}
+);
+
+canvas.addEventListener(
+    "touchmove",
+    scratch,
+    {passive:false}
+);
+
+canvas.addEventListener(
+    "touchend",
+    function(){
+
+        isScratching = false;
+
+    },
+    {passive:false}
+);
+
+
+
+/* =========================================
+   SCRATCH PROGRESS
+========================================= */
+
+let lastCheck = 0;
+
+
+function checkScratchProgress(){
+
+    const now =
+        Date.now();
+
+
+    if(
+        now - lastCheck < 250
+    ){
+
+        return;
+
+    }
+
+
+    lastCheck = now;
+
+
+    const rect =
+        canvas.getBoundingClientRect();
+
+
+    const sampleCanvas =
+        document.createElement(
+            "canvas"
+        );
+
+
+    const sampleSize = 80;
+
+
+    sampleCanvas.width =
+        sampleSize;
+
+    sampleCanvas.height =
+        sampleSize;
+
+
+    const sampleCtx =
+        sampleCanvas.getContext(
+            "2d"
+        );
+
+
+    sampleCtx.drawImage(
+        canvas,
+        0,
+        0,
+        rect.width,
+        rect.height,
+        0,
+        0,
+        sampleSize,
+        sampleSize
+    );
+
+
+    const pixels =
+        sampleCtx.getImageData(
+            0,
+            0,
+            sampleSize,
+            sampleSize
+        ).data;
+
+
+    let transparent = 0;
+
+    let total = 0;
+
+
+    for(
+        let i=3;
+        i<pixels.length;
+        i+=4
+    ){
+
+        total++;
+
+
+        if(
+            pixels[i] < 80
+        ){
+
+            transparent++;
+
+        }
+
+    }
+
+
+    const percent =
+        (transparent / total) * 100;
+
+
+    /* Scratch complete */
+    if(percent >= 45){
+
+        completed = true;
+
+
+        canvas.style.pointerEvents =
+            "none";
+
+        canvas.style.display =
+            "none";
+
+        scratchText.style.display =
+            "none";
+
+
+        /* Immediate confetti */
+        launchConfetti();
+
+    }
+
+}
+
+
+
+/* =========================================
+   CONFETTI
+========================================= */
+
+function launchConfetti(){
+
+    const container =
+        document.getElementById(
+            "confettiContainer"
+        );
+
+
+    container.innerHTML = "";
+
+
+    const pieces = 220;
+
+
+    for(
+        let i=0;
+        i<pieces;
+        i++
+    ){
+
+        const piece =
+            document.createElement(
+                "div"
+            );
+
+
+        piece.className =
+            "confetti";
+
+
+        piece.style.left =
+            Math.random() * 100 + "%";
+
+
+        piece.style.width =
+            (5 + Math.random()*7)
+            + "px";
+
+
+        piece.style.height =
+            (8 + Math.random()*13)
+            + "px";
+
+
+        piece.style.background =
+            [
+                "#FFD700",
+                "#FFFFFF",
+                "#F5C16C",
+                "#E9B949",
+                "#FFB6C1",
+                "#D4AF37"
+            ][
+                Math.floor(
+                    Math.random()*6
+                )
+            ];
+
+
+        piece.style.setProperty(
+            "--drift",
+            ((Math.random()-0.5)*300)
+            + "px"
+        );
+
+
+        piece.style.setProperty(
+            "--rotate",
+            ((Math.random()*1440)-720)
+            + "deg"
+        );
+
+
+        piece.style.animationDuration =
+            (2.2 + Math.random()*2.8)
+            + "s";
+
+
+        piece.style.animationDelay =
+            (Math.random()*0.8)
+            + "s";
+
+
+        container.appendChild(
+            piece
+        );
+
+    }
+
+
+    setTimeout(
+        function(){
+
+            container.innerHTML = "";
+
+        },
+        6000
+    );
+
+}
+
+</script>
+
+</body>
+</html>
